@@ -10,6 +10,7 @@
  */
 
 import { join } from 'node:path';
+import { getOmcRoot } from '../lib/worktree-paths.js';
 import { writeFileWithMode, ensureDirWithMode, validateResolvedPath } from './fs-utils.js';
 import { getActivityLog, formatActivityTimeline } from './activity-log.js';
 import { generateUsageReport } from './usage-tracker.js';
@@ -112,7 +113,7 @@ export function saveTeamReport(
   teamName: string
 ): string {
   const report = generateTeamReport(workingDirectory, teamName);
-  const dir = join(workingDirectory, '.omc', 'reports');
+  const dir = join(getOmcRoot(workingDirectory), 'reports');
   ensureDirWithMode(dir);
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
   const filePath = join(dir, `team-${teamName}-${timestamp}.md`);

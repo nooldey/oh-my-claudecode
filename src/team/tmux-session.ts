@@ -9,6 +9,7 @@
 
 import { exec, execFile, execSync, execFileSync } from 'child_process';
 import { join, basename, isAbsolute, win32 } from 'path';
+import { getOmcRoot } from '../lib/worktree-paths.js';
 import { promisify } from 'util';
 import fs from 'fs/promises';
 import { validateTeamName } from './team-name.js';
@@ -813,7 +814,7 @@ export async function killWorkerPanes(opts: {
   if (!paneIds.length) return;   // guard: nothing to kill
 
   // 1. Write graceful shutdown sentinel
-  const shutdownPath = join(cwd, '.omc', 'state', 'team', teamName, 'shutdown.json');
+  const shutdownPath = join(getOmcRoot(cwd), 'state', 'team', teamName, 'shutdown.json');
   try {
     await fs.writeFile(shutdownPath, JSON.stringify({ requestedAt: Date.now() }));
     await sleep(graceMs);

@@ -11,6 +11,7 @@ import { join } from 'path';
 import { existsSync, mkdirSync, readFileSync, readdirSync, unlinkSync } from 'fs';
 import { z } from 'zod';
 import { atomicWriteJsonSync } from '../lib/atomic-write.js';
+import { getOmcRoot } from '../lib/worktree-paths.js';
 
 export interface InteropConfig {
   sessionId: string;
@@ -83,7 +84,7 @@ const SharedMessageSchema = z.object({
  * Get the interop directory path for a worktree
  */
 export function getInteropDir(cwd: string): string {
-  return join(cwd, '.omc', 'state', 'interop');
+  return join(getOmcRoot(cwd), 'state', 'interop');
 }
 
 /**

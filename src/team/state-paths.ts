@@ -1,4 +1,5 @@
 import { join } from 'path';
+import { getOmcRoot } from '../lib/worktree-paths.js';
 
 /**
  * Typed path builders for all team state files.
@@ -122,16 +123,19 @@ export const TeamPaths = {
 
 /**
  * Get absolute path for a team state file.
+ * Strips the `.omc/` prefix from TeamPaths and resolves via getOmcRoot()
+ * so that OMC_STATE_DIR is respected.
  */
 export function absPath(cwd: string, relativePath: string): string {
-  return join(cwd, relativePath);
+  const withinOmc = relativePath.startsWith('.omc/') ? relativePath.slice(5) : relativePath;
+  return join(getOmcRoot(cwd), withinOmc);
 }
 
 /**
  * Get absolute root path for a team's state directory.
  */
 export function teamStateRoot(cwd: string, teamName: string): string {
-  return join(cwd, TeamPaths.root(teamName));
+  return absPath(cwd, TeamPaths.root(teamName));
 }
 
 /**
@@ -148,9 +152,9 @@ export function teamStateRoot(cwd: string, teamName: string): string {
  */
 export function getTaskStoragePath(cwd: string, teamName: string, taskId?: string): string {
   if (taskId !== undefined) {
-    return join(cwd, TeamPaths.taskFile(teamName, taskId));
+    return absPath(cwd, TeamPaths.taskFile(teamName, taskId));
   }
-  return join(cwd, TeamPaths.tasks(teamName));
+  return absPath(cwd, TeamPaths.tasks(teamName));
 }
 
 /**

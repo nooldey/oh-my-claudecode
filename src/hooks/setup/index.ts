@@ -9,6 +9,7 @@
 
 import { existsSync, mkdirSync, readdirSync, statSync, unlinkSync, readFileSync, writeFileSync, appendFileSync } from 'fs';
 import { join } from 'path';
+import { getOmcRoot } from '../../lib/worktree-paths.js';
 
 import { registerBeadsContext } from '../beads-context/index.js';
 
@@ -44,12 +45,12 @@ export interface HookOutput {
 // Constants
 // ============================================================================
 
-const REQUIRED_DIRECTORIES = [
-  '.omc/state',
-  '.omc/logs',
-  '.omc/notepads',
-  '.omc/state/checkpoints',
-  '.omc/plans',
+const REQUIRED_SUBDIRECTORIES = [
+  'state',
+  'logs',
+  'notepads',
+  'state/checkpoints',
+  'plans',
 ];
 
 const CONFIG_FILES = [
@@ -67,9 +68,10 @@ const DEFAULT_STATE_MAX_AGE_DAYS = 7;
  */
 export function ensureDirectoryStructure(directory: string): string[] {
   const created: string[] = [];
+  const omcRoot = getOmcRoot(directory);
 
-  for (const dir of REQUIRED_DIRECTORIES) {
-    const fullPath = join(directory, dir);
+  for (const dir of REQUIRED_SUBDIRECTORIES) {
+    const fullPath = join(omcRoot, dir);
     if (!existsSync(fullPath)) {
       try {
         mkdirSync(fullPath, { recursive: true });
@@ -248,7 +250,7 @@ export async function processSetupInit(input: SetupInput): Promise<HookOutput> {
  * Prune old state files from .omc/state directory
  */
 export function pruneOldStateFiles(directory: string, maxAgeDays: number = DEFAULT_STATE_MAX_AGE_DAYS): number {
-  const stateDir = join(directory, '.omc/state');
+  const stateDir = join(getOmcRoot(directory), 'state');
   if (!existsSync(stateDir)) {
     return 0;
   }
@@ -311,7 +313,7 @@ export function pruneOldStateFiles(directory: string, maxAgeDays: number = DEFAU
  * Clean up orphaned state files (state files without corresponding active sessions)
  */
 export function cleanupOrphanedState(directory: string): number {
-  const stateDir = join(directory, '.omc/state');
+  const stateDir = join(getOmcRoot(directory), 'state');
   if (!existsSync(stateDir)) {
     return 0;
   }

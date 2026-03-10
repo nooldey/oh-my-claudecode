@@ -19,6 +19,7 @@ import { atomicWriteJsonSync } from "../../lib/atomic-write.js";
 import {
   OmcPaths,
   getWorktreeRoot,
+  getOmcRoot,
   validateWorkingDirectory,
 } from "../../lib/worktree-paths.js";
 import {
@@ -578,7 +579,7 @@ export function cleanupStaleStates(
   maxAgeMs: number = MAX_STATE_AGE_MS,
 ): number {
   const stateDir = directory
-    ? path.join(directory, ".omc", "state")
+    ? path.join(getOmcRoot(directory), "state")
     : getLocalStateDir();
 
   if (!fs.existsSync(stateDir)) return 0;

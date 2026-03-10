@@ -3,6 +3,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { readFile, readdir, rm } from 'fs/promises';
 import { homedir } from 'os';
 import { dirname, join } from 'path';
+import { getOmcRoot } from '../lib/worktree-paths.js';
 import { fileURLToPath } from 'url';
 import { executeTeamApiOperation as executeCanonicalTeamApiOperation, resolveTeamApiOperation } from '../team/api-interop.js';
 import { killWorkerPanes, killTeamSession } from '../team/tmux-session.js';
@@ -177,7 +178,7 @@ function panesArtifactPath(jobsDir: string, jobId: string): string {
 }
 
 function teamStateRoot(cwd: string, teamName: string): string {
-  return join(cwd, '.omc', 'state', 'team', teamName);
+  return join(getOmcRoot(cwd), 'state', 'team', teamName);
 }
 
 function validateJobId(jobId: string): void {

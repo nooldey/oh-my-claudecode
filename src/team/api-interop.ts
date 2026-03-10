@@ -1,5 +1,6 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join, resolve as resolvePath } from 'node:path';
+import { getOmcRoot } from '../lib/worktree-paths.js';
 import {
   TEAM_NAME_SAFE_PATTERN,
   WORKER_NAME_SAFE_PATTERN,
@@ -142,7 +143,7 @@ function parseValidatedTaskIdArray(value: unknown, fieldName: string): string[] 
 
 function teamStateExists(teamName: string, candidateCwd: string): boolean {
   if (!TEAM_NAME_SAFE_PATTERN.test(teamName)) return false;
-  const teamRoot = join(candidateCwd, '.omc', 'state', 'team', teamName);
+  const teamRoot = join(getOmcRoot(candidateCwd), 'state', 'team', teamName);
   return existsSync(join(teamRoot, 'config.json')) || existsSync(join(teamRoot, 'tasks')) || existsSync(teamRoot);
 }
 
@@ -224,7 +225,7 @@ function resolveTeamWorkingDirectoryFromMetadata(
   candidateCwd: string,
   workerContext: { teamName: string; workerName: string } | null,
 ): string | null {
-  const teamRoot = join(candidateCwd, '.omc', 'state', 'team', teamName);
+  const teamRoot = join(getOmcRoot(candidateCwd), 'state', 'team', teamName);
   if (!existsSync(teamRoot)) return null;
 
   if (workerContext?.teamName === teamName) {

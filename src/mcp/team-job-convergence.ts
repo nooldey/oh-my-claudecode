@@ -1,6 +1,7 @@
 import { existsSync, readFileSync, rmSync } from 'fs';
 import { join } from 'path';
 import { validateTeamName } from '../team/team-name.js';
+import { getOmcRoot } from '../lib/worktree-paths.js';
 
 export interface OmcTeamJob {
   status: 'running' | 'completed' | 'failed' | 'timeout';
@@ -113,7 +114,7 @@ export function clearScopedTeamState(job: Pick<OmcTeamJob, 'cwd' | 'teamName'>):
     return `team state cleanup skipped (invalid teamName): ${error instanceof Error ? error.message : String(error)}`;
   }
 
-  const stateDir = join(job.cwd, '.omc', 'state', 'team', job.teamName);
+  const stateDir = join(getOmcRoot(job.cwd), 'state', 'team', job.teamName);
   try {
     if (!existsSync(stateDir)) {
       return `team state dir not found at ${stateDir}.`;

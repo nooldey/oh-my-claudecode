@@ -16,6 +16,7 @@
 import { readFile, writeFile, mkdir, readdir, appendFile, rename, rm, stat } from 'fs/promises';
 import { existsSync } from 'fs';
 import { dirname, join, resolve } from 'path';
+import { getOmcRoot } from '../lib/worktree-paths.js';
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
@@ -542,8 +543,8 @@ export async function drainPendingTeamDispatch(options: {
   injector?: Injector;
 } = { cwd: '' }): Promise<DrainResult> {
   const { cwd } = options;
-  const stateDir = options.stateDir ?? join(cwd, '.omc', 'state');
-  const logsDir = options.logsDir ?? join(cwd, '.omc', 'logs');
+  const stateDir = options.stateDir ?? join(getOmcRoot(cwd), 'state');
+  const logsDir = options.logsDir ?? join(getOmcRoot(cwd), 'logs');
   const maxPerTick = options.maxPerTick ?? 5;
   const injector = options.injector ?? defaultInjector;
 

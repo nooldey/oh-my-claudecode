@@ -10,6 +10,7 @@
 
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { getOmcRoot } from '../lib/worktree-paths.js';
 import { execFileSync } from 'node:child_process';
 import { atomicWriteJson, ensureDirWithMode, validateResolvedPath } from './fs-utils.js';
 import { sanitizeName } from './tmux-session.js';
@@ -24,7 +25,7 @@ export interface WorktreeInfo {
 
 /** Get worktree path for a worker */
 function getWorktreePath(repoRoot: string, teamName: string, workerName: string): string {
-  return join(repoRoot, '.omc', 'worktrees', sanitizeName(teamName), sanitizeName(workerName));
+  return join(getOmcRoot(repoRoot), 'worktrees', sanitizeName(teamName), sanitizeName(workerName));
 }
 
 /** Get branch name for a worker */
@@ -34,7 +35,7 @@ function getBranchName(teamName: string, workerName: string): string {
 
 /** Get worktree metadata path */
 function getMetadataPath(repoRoot: string, teamName: string): string {
-  return join(repoRoot, '.omc', 'state', 'team-bridge', sanitizeName(teamName), 'worktrees.json');
+  return join(getOmcRoot(repoRoot), 'state', 'team-bridge', sanitizeName(teamName), 'worktrees.json');
 }
 
 /** Read worktree metadata */
@@ -52,7 +53,7 @@ function readMetadata(repoRoot: string, teamName: string): WorktreeInfo[] {
 function writeMetadata(repoRoot: string, teamName: string, entries: WorktreeInfo[]): void {
   const metaPath = getMetadataPath(repoRoot, teamName);
   validateResolvedPath(metaPath, repoRoot);
-  const dir = join(repoRoot, '.omc', 'state', 'team-bridge', sanitizeName(teamName));
+  const dir = join(getOmcRoot(repoRoot), 'state', 'team-bridge', sanitizeName(teamName));
   ensureDirWithMode(dir);
   atomicWriteJson(metaPath, entries);
 }
@@ -91,7 +92,7 @@ export function createWorkerWorktree(
   } catch { /* branch doesn't exist, fine */ }
 
   // Create worktree directory
-  const wtDir = join(repoRoot, '.omc', 'worktrees', sanitizeName(teamName));
+  const wtDir = join(getOmcRoot(repoRoot), 'worktrees', sanitizeName(teamName));
   ensureDirWithMode(wtDir);
 
   // Create worktree with new branch

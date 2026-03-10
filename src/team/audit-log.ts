@@ -8,6 +8,7 @@
  */
 
 import { join } from 'node:path';
+import { getOmcRoot } from '../lib/worktree-paths.js';
 import { existsSync, readFileSync, statSync, renameSync, writeFileSync, lstatSync, unlinkSync } from 'node:fs';
 import { appendFileWithMode, ensureDirWithMode, validateResolvedPath } from './fs-utils.js';
 
@@ -44,7 +45,7 @@ export interface AuditEvent {
 const DEFAULT_MAX_LOG_SIZE = 5 * 1024 * 1024; // 5MB
 
 function getLogPath(workingDirectory: string, teamName: string): string {
-  return join(workingDirectory, '.omc', 'logs', `team-bridge-${teamName}.jsonl`);
+  return join(getOmcRoot(workingDirectory), 'logs', `team-bridge-${teamName}.jsonl`);
 }
 
 /**
@@ -56,7 +57,7 @@ export function logAuditEvent(
   event: AuditEvent
 ): void {
   const logPath = getLogPath(workingDirectory, event.teamName);
-  const dir = join(workingDirectory, '.omc', 'logs');
+  const dir = join(getOmcRoot(workingDirectory), 'logs');
   validateResolvedPath(logPath, workingDirectory);
   ensureDirWithMode(dir);
   const line = JSON.stringify(event) + '\n';
@@ -131,7 +132,7 @@ export function rotateAuditLog(
 
   // Atomic write: write to temp, then rename
   const tmpPath = logPath + '.tmp';
-  const logsDir = join(workingDirectory, '.omc', 'logs');
+  const logsDir = join(getOmcRoot(workingDirectory), 'logs');
   validateResolvedPath(tmpPath, logsDir);
 
   // Prevent symlink attacks: if tmp path exists as symlink, remove it

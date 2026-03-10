@@ -16,6 +16,7 @@
 
 import { existsSync, mkdirSync, readdirSync, readFileSync } from "fs";
 import { join, resolve } from "path";
+import { getOmcRoot } from "./worktree-paths.js";
 import type BetterSqlite3 from "better-sqlite3";
 import type { JobStatus } from "../mcp/prompt-persistence.js";
 
@@ -66,14 +67,14 @@ function getDb(cwd?: string): BetterSqlite3.Database | null {
  * Get the database file path
  */
 function getDbPath(cwd: string): string {
-  return join(cwd, ".omc", "state", "jobs.db");
+  return join(getOmcRoot(cwd), "state", "jobs.db");
 }
 
 /**
  * Ensure the state directory exists
  */
 function ensureStateDir(cwd: string): void {
-  const stateDir = join(cwd, ".omc", "state");
+  const stateDir = join(getOmcRoot(cwd), "state");
   if (!existsSync(stateDir)) {
     mkdirSync(stateDir, { recursive: true });
   }

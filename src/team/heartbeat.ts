@@ -10,18 +10,19 @@
 
 import { readFileSync, existsSync, readdirSync, unlinkSync, rmdirSync } from 'fs';
 import { join } from 'path';
+import { getOmcRoot } from '../lib/worktree-paths.js';
 import type { HeartbeatData } from './types.js';
 import { sanitizeName } from './tmux-session.js';
 import { atomicWriteJson } from './fs-utils.js';
 
 /** Heartbeat file path */
 function heartbeatPath(workingDirectory: string, teamName: string, workerName: string): string {
-  return join(workingDirectory, '.omc', 'state', 'team-bridge', sanitizeName(teamName), `${sanitizeName(workerName)}.heartbeat.json`);
+  return join(getOmcRoot(workingDirectory), 'state', 'team-bridge', sanitizeName(teamName), `${sanitizeName(workerName)}.heartbeat.json`);
 }
 
 /** Heartbeat directory for a team */
 function heartbeatDir(workingDirectory: string, teamName: string): string {
-  return join(workingDirectory, '.omc', 'state', 'team-bridge', sanitizeName(teamName));
+  return join(getOmcRoot(workingDirectory), 'state', 'team-bridge', sanitizeName(teamName));
 }
 
 /** Write/update heartbeat. Called every poll cycle by the bridge. */
